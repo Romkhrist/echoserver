@@ -15,14 +15,14 @@
 
 int main(int argc, char* argv[])
 {
-    int                listener;             //listening socket
-    struct sockaddr_in addr; 
-    int                port;
-	int                connections      = 3; //max connections
-    char               buff[BUFF_SIZE];      //buffer
-    fd_set             readset;
-	int                nfds;
-    struct timeval     timeout;
+    int                  listener;             //listening socket
+    struct sockaddr_in   addr; 
+    int                  port;
+	int                  connections      = 3; //max connections
+    char                 buff[BUFF_SIZE];      //buffer
+    fd_set               readset;
+	int                  nfds;
+    struct timeval       timeout;
 
 	memset(buff, '\0', sizeof(buff));
 
@@ -95,8 +95,11 @@ int main(int argc, char* argv[])
     {
         timeout.tv_sec  = 60;
         timeout.tv_usec = 0;
+        
+        fd_set tmpfds;
+        memcpy(&tmpfds, &readset, sizeof(fd_set));
 
-		int count = select(nfds, &readset, NULL, NULL, &timeout);
+		int count = select(nfds, &tmpfds, NULL, NULL, &timeout);
 		if (count == -1)
 		{
 			perror("Select failed");
@@ -112,7 +115,7 @@ int main(int argc, char* argv[])
 
 		for (int fd = 0; fd < nfds; fd++)
 		{
-			if (!FD_ISSET(fd, &readset))
+			if (!FD_ISSET(fd, &tmpfds))
             {
 				continue;
             }
