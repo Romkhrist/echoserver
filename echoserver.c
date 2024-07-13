@@ -18,13 +18,13 @@ int main(int argc, char* argv[])
     int                  listener;             //listening socket
     struct sockaddr_in   addr; 
     int                  port;
-	int                  connections      = 3; //max connections
+    int                  connections      = 3; //max connections
     char                 buff[BUFF_SIZE];      //buffer
     fd_set               readset;
-	int                  nfds;
+    int                  nfds;
     struct timeval       timeout;
 
-	memset(buff, '\0', sizeof(buff));
+    memset(buff, '\0', sizeof(buff));
 
     listener = socket(AF_INET, SOCK_STREAM, 0);
     if (listener == -1)
@@ -42,26 +42,23 @@ int main(int argc, char* argv[])
 			port = DEFAULT_PORT;
 			break;
 		case 2:
-			if (atoi(argv[1]) < 50000 || atoi(argv[1]) > 55000)
+                        port = atoi(argv[1]); 
+			if (port < 50000 || port > 55000)
 			{
 				printf("Invalid port number. Port number range 50000 - 55000\n");
 				close(listener);
 				exit(1);
 			} 
-			else 
-            { 
-                port = atoi(argv[1]); 
-            }
 			break;			
 		default:
 			printf("Error: too many parameters\n");
-            close(listener);
+                        close(listener);
 			exit(1);
 	}
     addr.sin_port        = htons(port);
     addr.sin_addr.s_addr = htonl(INADDR_ANY);
 
-    if (bind(listener, (struct sockaddr*)&addr, sizeof(addr)) !=0)
+    if (bind(listener, (struct sockaddr*)&addr, sizeof(addr)) != 0)
     {
         printf("Port \"%d\" already in use\n", port);
         for (port = 50000; port <= 55000; port++)
@@ -80,16 +77,18 @@ int main(int argc, char* argv[])
     }
 
     if (listen(listener, connections) != 0)
-	{
-		perror("Listen failed");
-		close(listener);
-		exit(1);
-	}
-	printf("Server is waiting for connections on port: %d...\n", port);
+    {
+            perror("Listen failed");
+            close(listener);
+            exit(1);
+    }
+	
+    printf("Server is waiting for connections on port: %d...\n", port);
 	
     FD_ZERO(&readset);
-	FD_SET(listener, &readset);
-	nfds = listener + 1;
+    FD_SET(listener, &readset);
+	
+    nfds = listener + 1;
 
     while(true)
     {
@@ -116,9 +115,9 @@ int main(int argc, char* argv[])
 		for (int fd = 0; fd < nfds; fd++)
 		{
 			if (!FD_ISSET(fd, &tmpfds))
-            {
+                        {
 				continue;
-            }
+                        }
             
 			if (fd == listener)
 			{				
@@ -134,12 +133,12 @@ int main(int argc, char* argv[])
 				FD_SET(fd, &readset);
                 
 				if (fd >= nfds)
-                {
+                                {
 					nfds = fd + 1;
-                }
+                                }
 			}
 			else 
-            {
+               {
                 int bytes_read = recv(fd, buff, sizeof(buff), 0);
                 if (bytes_read == -1)
                 {
@@ -174,5 +173,5 @@ int main(int argc, char* argv[])
 		}
 	}
 	close(listener);
-    return 0;
+        return 0;
 }
