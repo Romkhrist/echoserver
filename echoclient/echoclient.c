@@ -18,7 +18,7 @@ int main(int argc, char* argv[])
      
      memset(buff, '\0', sizeof(buff));
      
-     if ((sockfd = socket(AF_INET, SOCK_STREAM, 0)) == -1)
+     if ((sockfd = socket(AF_INET, SOCK_STREAM, 0)) < 0)
      {
          perror("echoclient: socket()");
          exit(1);
@@ -28,7 +28,7 @@ int main(int argc, char* argv[])
      addr.sin_port          = htons(atoi(argv[1]));
      addr.sin_addr.s_addr   = htonl(INADDR_LOOPBACK);
 
-     if (connect(sockfd, (struct sockaddr*)&addr, sizeof(addr)) == -1)
+     if (connect(sockfd, (struct sockaddr*)&addr, sizeof(addr)) < 0)
      {
          perror("echoclient: connect()");
          close(sockfd);
@@ -41,7 +41,7 @@ int main(int argc, char* argv[])
         fgets(buff, sizeof(buff), stdin);
         
         int bytes_sent = send(sockfd, buff, sizeof(buff), 0);
-        if(bytes_sent == -1)
+        if(bytes_sent < 0)
         {
         	perror("echoclient: send()");
         	close(sockfd);
@@ -49,7 +49,7 @@ int main(int argc, char* argv[])
         }
         
         int bytes_read = recv(sockfd, buff, bytes_sent, 0);
-        if(bytes_read == -1)
+        if(bytes_read < 0)
         {
         	perror("echoclient: recv()");
         	close(sockfd);
